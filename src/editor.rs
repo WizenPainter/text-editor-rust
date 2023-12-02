@@ -92,6 +92,12 @@ impl Editor {
                 self.document.insert(&self.cursor_position,c);
                 self.move_cursor(Key::Right);
             },
+            Key::Backspace => {
+                if self.cursor_position.x > 0 || self.cursor_position.y > 0 {
+                    self.move_cursor(Key::Left);
+                    self.document.delete(&self.cursor_position)
+                }
+            },
             Key::Up | Key::Down | Key::Left | Key::Right | Key::PageUp | Key::PageDown | Key::Home | Key::End => self.move_cursor(pressed_key),
             _ => (),
         }
@@ -126,6 +132,7 @@ impl Editor {
             0
         };
         match key {
+            Key::Delete => self.document.delete(&self.cursor_position),
             Key::Up => y = y.saturating_sub(1),
             Key::Down => {
                 if y < height {
@@ -227,7 +234,7 @@ impl Editor {
         Terminal::set_fg_color(STATUS_FG_COLOR);
         println!("{}\r", status);
         Terminal::reset_fg_color();
-        Terminal::reset_bg_color();;
+        Terminal::reset_bg_color();
     }
 
     fn draw_message_bar(&self) {
